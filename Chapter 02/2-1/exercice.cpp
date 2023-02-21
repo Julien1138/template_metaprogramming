@@ -19,17 +19,29 @@ struct replace_type
   typedef typename replace<c, y, std::is_same_v<c, x>>::type type;
 };
 
-// template <typename c, typename x, typename y>
-// struct replace_type<c &, x, y>
-// {
-//   typedef typename replace_type<c, x, y>::type &type;
-// };
+template <typename c, typename x, typename y>
+struct replace_type<c &, x, y>
+{
+  typedef typename replace_type<c, x, y>::type &type;
+};
 
-// template <typename c, typename x, typename y>
-// struct replace_type<c *, x, y>
-// {
-//   typedef typename replace_type<c, x, y>::type *type;
-// };
+template <typename c, typename x, typename y>
+struct replace_type<c &, x &, y &>
+{
+  typedef typename replace_type<c, x, y>::type &type;
+};
+
+template <typename c, typename x, typename y>
+struct replace_type<c *, x, y>
+{
+  typedef typename replace_type<c, x, y>::type *type;
+};
+
+template <typename c, typename x, typename y>
+struct replace_type<c *, x *, y *>
+{
+  typedef typename replace_type<c, x, y>::type *type;
+};
 
 template <typename c, int N, typename x, typename y>
 struct replace_type<c[N], x, y>
@@ -49,9 +61,11 @@ int main()
             << std::endl;
   std::cout << std::is_same<replace_type<char, void, int>::type, char>::value
             << std::endl;
+  std::cout << std::is_same<replace_type<void *, void, int>::type, int *>::value
+            << std::endl;
   std::cout << std::is_same<replace_type<void *, void *, int *>::type, int *>::value
             << std::endl;
-  std::cout << std::is_same<replace_type<char &, char &, long &>::type, long &>::value
+  std::cout << std::is_same<replace_type<char &, char, long>::type, long &>::value
             << std::endl;
   std::cout << std::is_same<replace_type<int const *[10], int const *, long *>::type, long *[10]>::value
             << std::endl;
